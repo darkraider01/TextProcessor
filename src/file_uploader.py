@@ -1,6 +1,6 @@
 import os
 import logging
-from src.file_processor import analyze_and_save
+from file_processor import analyze_and_save
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

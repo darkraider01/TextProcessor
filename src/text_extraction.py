@@ -2,6 +2,8 @@ import os
 import cv2
 from PIL import Image
 import pytesseract
+import logging
+from io import BytesIO
 
 class TextExtractor:
     def __init__(self, tesseract_path=None):
@@ -26,25 +28,22 @@ class TextExtractor:
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
             return []
-
         min_contour_area = 500
         filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_contour_area]
         return filtered_contours
 
     def _extract_text_area(self, img, x, y, w, h):
         card = img[y:y + h, x:x + w]
-        temp_file = 'temp.jpg'
-        cv2.imwrite(temp_file, card)
-        r = Image.open(temp_file)
-        text = pytesseract.image_to_string(r)
-        os.remove(temp_file)
+        _, img_encoded = cv2.imencode('.jpg', card)
+        img_bytes = BytesIO(img_encoded.tobytes())
+        text = pytesseract.image_to_string(Image.open(img_bytes))
         return text
 
     def process_image(self, file_path):
         try:
             img = cv2.imread(file_path)
             if img is None:
-                print("Error: Unable to read image file.")
+                logging.error(f"Unable to read image file: {file_path}")
                 return
 
             img_resized = self._resize_image(img)
@@ -52,24 +51,26 @@ class TextExtractor:
             contours = self._find_contours(thresh)
 
             if not contours:
-                print("No significant text areas found.")
+                logging.info("No significant text areas found.")
                 return
 
+            results = []
             for contour in contours:
                 x, y, w, h = cv2.boundingRect(contour)
-                cv2.rectangle(img_resized, (x, y), (x + w, y + h), (0, 255, 255), 2)
                 text = self._extract_text_area(img_resized, x, y, w, h)
-                print(f"Extracted text from box ({x}, {y}, {w}, {h}):")
-                print(text)
+                results.append({
+                    'box': (x, y, w, h),
+                    'text': text
+                })
+                logging.info(f"Extracted text from box ({x}, {y}, {w}, {h}): {text}")
 
-            cv2.imshow("Detected Regions", img_resized)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            # Ensure no image display code is present
+            # cv2.imshow("Detected Regions", img_resized)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+
+            return results
 
         except Exception as e:
-            print(f"Error: {e}")
+            logging.error(f"Error processing image {file_path}: {e}")
             return
-
-# Example usage:
-# extractor = TextExtractor(tesseract_path='path/to/tesseract')
-# extractor.process_image('path/to/image.jpg')
