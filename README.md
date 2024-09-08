@@ -46,6 +46,18 @@ This is a comprehensive text analysis tool that processes various file types, in
 
 - **Image Processing and Text Extraction**:
   - `process_image(file_path)`: Processes the given image file to detect text areas, extracts text from those areas, and displays the image with detected regions highlighted. Shows extracted text in the console.
+### File Handling and Analysis
+
+- **Filtered Words**:
+  - The tool now supports filtering text based on a list of filtered words. This list should be provided as a text file specified by the `FILTERED_WORDS_PATH` environment variable.
+
+- **File Processing**:
+  - Supports processing image files (`.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.gif`), JSON files, and text files.
+  - Processes files and saves the extracted text and analysis results to JSON files in a uniquely generated output directory.
+
+- **Logging and JSON Output**:
+  - Keeps track of processed files in a JSON log file.
+  - Outputs analysis results in JSON format, including extracted text and detailed analysis.
 
 ### Key Features:
 
@@ -55,7 +67,10 @@ This is a comprehensive text analysis tool that processes various file types, in
 - **Contour-Based Text Detection**: Identifies and processes regions of interest in the image based on contours.
 - **Text Extraction**: Extracts text from detected areas and prints it to the console.
 - **Visualization**: Displays the image with detected text regions highlighted for visual verification.
-
+- **Filtered Words Integration**: Filters text based on a specified list of filtered words, loaded from a text file.
+- **Logging and Tracking**: Keeps track of processed files and outputs detailed analysis results in JSON format.
+- **File Processing Support**: Processes image files (`.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.gif`), JSON files, and text files.
+- **Score system to determine the vulnarability of the filtered texts on the basis of the occurance of the filtered text and sentiment analysis of it
 ## Installation
 
 ### Prerequisites
@@ -99,6 +114,7 @@ To use this tool, follow these steps:
    - `FILE_DIRECTORY`: Path to the directory containing the files to be processed.
    - `OUTPUT_DIRECTORY`: Path to the directory where results will be saved.
    - `PROCESSED_FILES_LOG`: Path to the JSON log file for processed files.
+   - `FILTERED_WORDS_FILE`: Path to the text file containing the list of filtered words.
 
 2. Run the main script:
    ```sh
@@ -112,6 +128,7 @@ For Windows:
 setx FILE_DIRECTORY C:\path\to\files
 setx OUTPUT_DIRECTORY C:\path\to\output
 setx PROCESSED_FILES_LOG C:\path\to\processed_files.json
+setx FILTERED_WORDS_FILE C:\path\to\filtered_words.txt
 python src/main.py
 ```
 
@@ -120,8 +137,9 @@ For macOS/Linux:
 export FILE_DIRECTORY=/path/to/files
 export OUTPUT_DIRECTORY=/path/to/output
 export PROCESSED_FILES_LOG=/path/to/processed_files.json
+export FILTERED_WORDS_FILE=/path/to/filtered_words.txt
 python src/main.py
 ```
 ```
 
-You can copy and paste this directly into your `README.md` file. Let me know if you need any more changes!
+
